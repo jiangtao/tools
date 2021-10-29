@@ -505,3 +505,58 @@ impl<L: Language> From<SyntaxElement<L>> for cursor::SyntaxElement {
 		}
 	}
 }
+
+/// List over a list of nodes.
+#[derive(Debug, Clone)]
+pub struct SyntaxNodeList<L: Language> {
+	node: SyntaxNode<L>,
+}
+
+impl<L: Language> SyntaxNodeList<L> {
+	pub fn new(node: SyntaxNode<L>) -> Self {
+		Self { node }
+	}
+
+	pub fn iter(&self) -> SyntaxNodeChildren<L> {
+		self.node.children()
+	}
+
+	pub fn len(&self) -> usize {
+		// TODO 1724: Use self.node.green().children().len() once trivia is attached to tokens
+		self.node.green().children().len()
+	}
+
+	pub fn is_empty(&self) -> bool {
+		self.len() == 0
+	}
+
+	pub fn first(&self) -> Option<SyntaxNode<L>> {
+		self.node.children().next()
+	}
+
+	pub fn last(&self) -> Option<SyntaxNode<L>> {
+		// TODO 1724: Directly jump to the last node using the green data structure once trivia is attached to tokens
+		self.node.children().last()
+	}
+
+	pub fn text(&self) -> SyntaxText {
+		self.node.text()
+	}
+
+	pub fn text_range(&self) -> TextRange {
+		self.node.text_range()
+	}
+
+	pub fn parent(&self) -> Option<SyntaxNode<L>> {
+		self.node.parent()
+	}
+}
+
+impl<L: Language> IntoIterator for &SyntaxNodeList<L> {
+	type Item = SyntaxNode<L>;
+	type IntoIter = SyntaxNodeChildren<L>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.iter()
+	}
+}

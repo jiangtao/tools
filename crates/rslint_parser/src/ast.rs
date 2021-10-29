@@ -10,7 +10,7 @@ mod generated;
 mod stmt_ext;
 mod ts_ext;
 
-use crate::{syntax_node::*, util::SyntaxNodeExt, SyntaxKind, TextRange};
+use crate::{syntax_node::*, util::SyntaxNodeExt, SyntaxKind, SyntaxText, TextRange};
 use std::marker::PhantomData;
 
 pub use self::{
@@ -75,6 +75,13 @@ impl<N> AstChildren<N> {
 			ph: PhantomData,
 		}
 	}
+
+	fn new_from_children(children: SyntaxNodeChildren) -> Self {
+		AstChildren {
+			inner: children,
+			ph: PhantomData,
+		}
+	}
 }
 
 impl<N: AstNode> Iterator for AstChildren<N> {
@@ -84,8 +91,71 @@ impl<N: AstNode> Iterator for AstChildren<N> {
 	}
 }
 
+#[derive(Debug, Clone)]
+pub struct AstNodeList<N> {
+	inner: SyntaxList,
+	ph: PhantomData<N>,
+}
+
+impl<N: AstNode> AstNodeList<N> {
+	fn new(parent: &SyntaxNode) -> Self {
+		AstNodeList {
+			inner: SyntaxList::new(parent.clone()),
+			ph: PhantomData,
+		}
+	}
+
+	pub fn iter(&self) -> AstChildren<N> {
+		AstChildren::new_from_children(self.inner.iter())
+	}
+
+	#[inline]
+	pub fn len(&self) -> usize {
+		self.inner.len()
+	}
+
+	#[inline]
+	pub fn first(&self) -> Option<N> {
+		// TODO 1724: Use inner once trivia is attached to tokens (not safe yet)
+		self.iter().next()
+	}
+
+	pub fn last(&self) -> Option<N> {
+		// TODO 1724: Use inner once trivia is attached to tokens (not safe yet)
+		self.iter().last()
+	}
+
+	#[inline]
+	pub fn is_empty(&self) -> bool {
+		self.inner.is_empty()
+	}
+
+	#[inline]
+	pub fn text(&self) -> SyntaxText {
+		self.inner.text()
+	}
+
+	pub fn text_range(&self) -> TextRange {
+		self.inner.text_range()
+	}
+
+	pub fn parent(&self) -> Option<SyntaxNode> {
+		self.inner.parent().map(SyntaxNode::from)
+	}
+}
+
+impl<N: AstNode> IntoIterator for AstNodeList<N> {
+	type Item = N;
+	type IntoIter = AstChildren<N>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.iter()
+	}
+}
+
 mod support {
-	use super::{AstChildren, AstNode, SyntaxKind, SyntaxNode, SyntaxToken};
+	use super::{AstNode, AstNodeList, SyntaxKind, SyntaxNode, SyntaxToken};
+	use crate::ast::AstChildren;
 
 	pub(super) fn child<N: AstNode>(parent: &SyntaxNode) -> Option<N> {
 		parent.children().find_map(N::cast)
@@ -93,6 +163,16 @@ mod support {
 
 	pub(super) fn children<N: AstNode>(parent: &SyntaxNode) -> AstChildren<N> {
 		AstChildren::new(parent)
+	}
+
+	pub(super) fn list<N: AstNode>(parent: &SyntaxNode) -> AstNodeList<N> {
+		// Lists should never be missing. The parser must always insert the list.
+		let list = parent
+			.children()
+			.find(|e| e.kind() == SyntaxKind::LIST)
+			.expect("Expected a node list.");
+
+		AstNodeList::new(&list)
 	}
 
 	pub(super) fn token(parent: &SyntaxNode, kind: SyntaxKind) -> Option<SyntaxToken> {
