@@ -37,6 +37,7 @@ fn named_list(p: &mut Parser) -> Marker {
 	let m = p.start();
 	p.expect(T!['{']);
 	let mut first = true;
+	let specifiers_list = p.start();
 	while !p.at(EOF) && !p.at(T!['}']) {
 		if first {
 			first = false;
@@ -49,6 +50,7 @@ fn named_list(p: &mut Parser) -> Marker {
 
 		specifier(p);
 	}
+	specifiers_list.complete(p, LIST);
 	p.expect(T!['}']);
 	m
 }

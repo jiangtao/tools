@@ -53,14 +53,10 @@ impl<T> Parse<T> {
 	///     }
 	/// ", 0);
 	///
-	/// // The first child of the root syntax node (Script) is the if statement.
-	/// let if_stmt = parse.syntax().first_child().unwrap();
+	/// // The first stmt in the root syntax node (Script) is the if statement.
+	/// let if_stmt = parse.tree().items().first().unwrap();
 	///
-	/// assert_eq!(if_stmt.kind(), SyntaxKind::IF_STMT);
-	///
-	/// // The if statement node is untyped, we must first cast it to a typed ast node
-	/// // to be able to get properties of it in an easy way.
-	/// assert_eq!(if_stmt.to::<IfStmt>().condition().unwrap().syntax().text(), "(a > 5)");
+	/// assert_eq!(if_stmt.syntax().kind(), SyntaxKind::IF_STMT);
 	/// ```
 	pub fn syntax(&self) -> SyntaxNode {
 		SyntaxNode::new_root(self.green.clone())
@@ -141,7 +137,7 @@ fn parse_common(
 /// Or turned into a typed [`Script`](Script) with [`tree`](Parse::tree).
 ///
 /// ```
-/// use rslint_parser::{ast::BracketExpr, parse_text, AstNode, SyntaxToken, SyntaxNodeExt, util};
+/// use rslint_parser::{ast::BracketExpr, parse_text, AstNode, SyntaxToken, SyntaxNodeExt, util, SyntaxList};
 ///
 /// let parse = parse_text("foo. bar[2]", 0);
 /// // The untyped syntax node of `foo.bar[2]`, the root node is `Script`.
@@ -151,7 +147,8 @@ fn parse_common(
 /// println!("{:#?}", untyped_expr_node);
 ///
 /// // You can then cast syntax nodes into a typed AST node.
-/// let typed_ast_node = BracketExpr::cast(untyped_expr_node.first_child().unwrap().to_owned()).unwrap();
+/// let stmts_list = SyntaxList::new(untyped_expr_node.first_child().unwrap());
+/// let typed_ast_node = BracketExpr::cast(stmts_list.first().unwrap()).unwrap();
 ///
 /// // Everything on every ast node is optional because of error recovery.
 /// let prop = dbg!(typed_ast_node.prop()).unwrap();
@@ -177,11 +174,11 @@ pub fn parse_text(text: &str, file_id: usize) -> Parse<Script> {
 ///
 /// Unlike [`parse_text`], the final parse result includes no whitespace, it does however include errors.
 ///
-/// Note however that the ranges and text of nodes still includes whitespace! Therefore you should trim text before rendering it.  
+/// Note however that the ranges and text of nodes still includes whitespace! Therefore you should trim text before rendering it.
 /// The [`util`](crate::util) module has utility functions for dealing with this easily.
 ///
 /// ```
-/// use rslint_parser::{ast::BracketExpr, parse_text_lossy, AstNode, SyntaxToken, SyntaxNodeExt, util};
+/// use rslint_parser::{ast::BracketExpr, parse_text_lossy, AstNode, SyntaxToken, SyntaxNodeExt, util, SyntaxList};
 ///
 /// let parse = parse_text_lossy("foo. bar[2]", 0);
 /// // The untyped syntax node of `foo.bar[2]`, the root node is `Script`.
@@ -191,7 +188,8 @@ pub fn parse_text(text: &str, file_id: usize) -> Parse<Script> {
 /// println!("{:#?}", untyped_expr_node);
 ///
 /// // You can then cast syntax nodes into a typed AST node.
-/// let typed_ast_node = BracketExpr::cast(untyped_expr_node.first_child().unwrap()).unwrap();
+/// let stmts_list = SyntaxList::new(untyped_expr_node.first_child().unwrap());
+/// let typed_ast_node = BracketExpr::cast(stmts_list.first().unwrap()).unwrap();
 ///
 /// // Everything on every ast node is optional because of error recovery.
 /// let prop = typed_ast_node.prop().unwrap();

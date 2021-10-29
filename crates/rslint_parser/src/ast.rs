@@ -166,7 +166,7 @@ mod support {
 	}
 
 	pub(super) fn list<N: AstNode>(parent: &SyntaxNode) -> AstNodeList<N> {
-		// Lists should never be missing. The parser must always insert the list.
+		// It's a parser or mutation error if a list isn't present in a many-child (field: T*).
 		let list = parent
 			.children()
 			.find(|e| e.kind() == SyntaxKind::LIST)

@@ -1,7 +1,7 @@
 use crate::printer::Printer;
 use crate::{concat_elements, token, FormatElement, FormatOptions, FormatResult, ToFormatElement};
 use rome_rowan::SyntaxElement;
-use rslint_parser::ast::AstChildren;
+use rslint_parser::ast::AstNodeList;
 use rslint_parser::{AstNode, SyntaxNode, SyntaxToken};
 
 /// Handles the formatting of a CST and stores the options how the CST should be formatted (user preferences).
@@ -103,9 +103,9 @@ impl Formatter {
 	/// Formats each child and returns the result as a list.
 	///
 	/// Returns [None] if a child couldn't be formatted.
-	pub fn format_children<T: AstNode + ToFormatElement>(
+	pub fn format_list<T: AstNode + ToFormatElement>(
 		&self,
-		children: AstChildren<T>,
+		children: AstNodeList<T>,
 	) -> Option<impl Iterator<Item = FormatElement>> {
 		let mut result = Vec::new();
 

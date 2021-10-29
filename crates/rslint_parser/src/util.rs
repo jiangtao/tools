@@ -240,7 +240,7 @@ pub trait SyntaxNodeExt {
 		}
 	}
 
-	/// Get the first child in this node that can be casted to an AST node
+	/// Get the first direct-child in this node that can be casted to an AST node
 	fn child_with_ast<T: AstNode>(&self) -> Option<T> {
 		self.to_node().children().find_map(|child| child.try_to())
 	}

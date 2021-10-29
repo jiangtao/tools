@@ -29,6 +29,7 @@ pub type SyntaxNode = rome_rowan::SyntaxNode<JsLanguage>;
 pub type SyntaxToken = rome_rowan::SyntaxToken<JsLanguage>;
 pub type SyntaxElement = rome_rowan::SyntaxElement<JsLanguage>;
 pub type SyntaxNodeChildren = rome_rowan::SyntaxNodeChildren<JsLanguage>;
+pub type SyntaxList = rome_rowan::SyntaxNodeList<JsLanguage>;
 pub type SyntaxElementChildren = rome_rowan::SyntaxElementChildren<JsLanguage>;
 
 pub use rome_rowan::{Direction, NodeOrToken};

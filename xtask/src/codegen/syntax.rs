@@ -72,8 +72,8 @@ fn generate_nodes(grammar: AstSrc<'_>) -> Result<String> {
 
 				if field.is_many() {
 					quote! {
-						pub fn #method_name(&self) -> AstChildren<#ty> {
-							support::children(&self.syntax)
+						pub fn #method_name(&self) -> AstNodeList<#ty> {
+							support::list(&self.syntax)
 						}
 					}
 				} else if let Some(token_kind) = field.token_kind() {

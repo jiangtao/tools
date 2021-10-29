@@ -439,13 +439,14 @@ mod tests {
 
 	#[test]
 	fn var_decl_let_token() {
-		let parsed = parse_text("/* */let a = 5;", 0).syntax();
+		let parsed = parse_text("/* */let a = 5;", 0);
+		let var_decl = parsed
+			.tree()
+			.items()
+			.iter()
+			.find_map(|stmt| ast::VarDecl::cast(stmt.syntax().clone()));
 
-		assert!(parsed
-			.child_with_ast::<ast::VarDecl>()
-			.unwrap()
-			.let_token()
-			.is_some());
+		assert!(var_decl.unwrap().let_token().is_some());
 	}
 }
 
