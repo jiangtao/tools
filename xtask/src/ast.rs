@@ -153,6 +153,7 @@ pub(crate) const KINDS_SRC: KindsSrc = KindsSrc {
 		"SCRIPT",
 		"MODULE",
 		"ERROR",
+		"LIST",
 		"BLOCK_STMT",
 		"VAR_DECL",
 		"DECLARATOR",
@@ -401,7 +402,7 @@ macro_rules! ast_enums {
     };
 }
 
-/// Data used by codegen for generating ast nodes and SyntaxKind enums.  
+/// Data used by codegen for generating ast nodes and SyntaxKind enums.
 /// Comments represent definitions which are manually created since they are either unique enough
 /// or special enough to generate definitions for manually.
 pub(crate) const AST_SRC: AstSrc = AstSrc {
@@ -1037,7 +1038,7 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
 
 		struct ContinueStmt {
 			T![continue],
-			T![ident],
+			ident: NameRef,
 			T![;],
 		}
 
@@ -1435,6 +1436,8 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
 			T![!],
 			T![:],
 			ty: TsType,
+			T![=],
+			value: Expr,
 			T![;]
 		}
 
@@ -1443,13 +1446,13 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
 			accessibility: TsAccessibility,
 			name: PropName,
 			type_params: TsTypeParams,
-			parameters: ConstructorParameters,
+			parameters: ParameterList,
 			body: BlockStmt
 		}
 
 		struct ConstructorParameters {
 			T!['('],
-			parameters: ConstructorParamOrPat,
+			parameters: [ConstructorParamOrPat],
 			T![')']
 		}
 

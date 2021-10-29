@@ -145,6 +145,7 @@ pub enum SyntaxKind {
 	SCRIPT,
 	MODULE,
 	ERROR,
+	LIST,
 	BLOCK_STMT,
 	VAR_DECL,
 	DECLARATOR,

@@ -984,7 +984,7 @@ impl ContinueStmt {
 	pub fn continue_token(&self) -> Option<SyntaxToken> {
 		support::token(&self.syntax, T![continue])
 	}
-	pub fn ident_token(&self) -> Option<NameRef> { support::child(&self.syntax) }
+	pub fn ident(&self) -> Option<NameRef> { support::child(&self.syntax) }
 	pub fn semicolon_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T ! [;]) }
 }
 #[doc = ""]
@@ -1605,9 +1605,9 @@ impl ClassProp {
 	pub fn excl_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![!]) }
 	pub fn colon_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T ! [:]) }
 	pub fn ty(&self) -> Option<TsType> { support::child(&self.syntax) }
+	pub fn eq_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T ! [=]) }
+	pub fn value(&self) -> Option<Expr> { support::child(&self.syntax) }
 	pub fn semicolon_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T ! [;]) }
-	pub fn eq(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T ! [=])}
-	pub fn value(&self) -> Option<Expr> { support::child(&self.syntax)}
 }
 #[doc = ""]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1629,7 +1629,9 @@ pub struct ConstructorParameters {
 }
 impl ConstructorParameters {
 	pub fn l_paren_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T!['(']) }
-	pub fn parameters(&self) -> AstChildren<ConstructorParamOrPat> { support::children(&self.syntax) }
+	pub fn parameters(&self) -> AstChildren<ConstructorParamOrPat> {
+		support::children(&self.syntax)
+	}
 	pub fn r_paren_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![')']) }
 }
 #[doc = ""]
