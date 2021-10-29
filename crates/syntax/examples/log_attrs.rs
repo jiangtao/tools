@@ -14,12 +14,9 @@ fn main() {
 			log_attr(n);
 		}
 	}
-
-	dbg!(tree.to_string());
 }
 
 fn log_attr(n: SyntaxNode) -> Option<()> {
 	let attr = ast::JsxAttribute::cast(n)?;
-	dbg!(attr);
 	None
 }

@@ -13,8 +13,7 @@ fn main() -> Result<()> {
 	};
 
 	let src = std::fs::read_to_string(path)?;
-	let tree = syntax::parse(&src, language)?;
+	let _tree = syntax::parse(&src, language)?;
 
-	dbg!(tree);
 	Ok(())
 }
