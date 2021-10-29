@@ -17,6 +17,6 @@ fn main() {
 }
 
 fn log_attr(n: SyntaxNode) -> Option<()> {
-	let attr = ast::JsxAttribute::cast(n)?;
+	let _attr = ast::JsxAttribute::cast(n)?;
 	None
 }
